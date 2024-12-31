@@ -4,10 +4,10 @@ const UserProfile = () => {
   const [userData, setUserData] = useState({ name: '', email: '', location: '' });
   const [message, setMessage] = useState('');
 
-  // Fetch user profile on page load
+ 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem('userToken'); // Get token from localStorage
+      const token = localStorage.getItem('userToken'); 
       if (!token) {
         setMessage('You need to log in first!');
         return;
@@ -18,13 +18,13 @@ const UserProfile = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // Pass the token for authentication
+            Authorization: `Bearer ${token}`, 
           },
         });
 
         if (response.ok) {
           const data = await response.json();
-          setUserData(data); // Update the state with user profile data
+          setUserData(data); 
         } else {
           setMessage('Failed to fetch profile');
         }
@@ -37,7 +37,6 @@ const UserProfile = () => {
     fetchProfile();
   }, []);
 
-  // Handle form submission for updating the profile
   const handleUpdate = async (e) => {
     e.preventDefault();
 
@@ -54,7 +53,7 @@ const UserProfile = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(userData), // Send updated user data
+        body: JSON.stringify(userData), 
       });
 
       if (response.ok) {
@@ -69,7 +68,6 @@ const UserProfile = () => {
     }
   };
 
-  // Render the profile form
   return (
     <div style={styles.container}>
       <div style={styles.formBox}>
