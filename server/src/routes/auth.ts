@@ -2,7 +2,6 @@ import express, { Router, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/User';
 
-// Define interfaces for the request body
 interface SignupRequestBody {
   name: string;
   email: string;

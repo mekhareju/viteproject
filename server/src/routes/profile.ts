@@ -3,7 +3,7 @@ import User from '../models/User';
 
 const router: Router = express.Router();
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
   const { id } = req.params;
 
   try {
@@ -19,7 +19,7 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: Request<{ id: string }, {}, any>, res: Response) => {
   const { id } = req.params;
   const updates = req.body;
 
