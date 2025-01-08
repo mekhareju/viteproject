@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FormEvent } from 'react';
 
 interface UserData {
   name: string;
@@ -7,12 +7,16 @@ interface UserData {
 }
 
 const UserProfile: React.FC = () => {
-  const [userData, setUserData] = useState<UserData>({ name: '', email: '', location: '' });
+  const [userData, setUserData] = useState<UserData>({
+    name: '',
+    email: '',
+    location: '',
+  });
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem('userToken'); 
+      const token = localStorage.getItem('userToken');
       if (!token) {
         setMessage('You need to log in first!');
         return;
@@ -28,8 +32,8 @@ const UserProfile: React.FC = () => {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          setUserData(data); 
+          const data: UserData = await response.json();
+          setUserData(data);
         } else {
           setMessage('Failed to fetch profile');
         }
@@ -42,7 +46,7 @@ const UserProfile: React.FC = () => {
     fetchProfile();
   }, []);
 
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUpdate = async (e: FormEvent) => {
     e.preventDefault();
 
     const token = localStorage.getItem('userToken');
@@ -62,7 +66,7 @@ const UserProfile: React.FC = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: { message: string } = await response.json();
         setMessage(data.message || 'Profile updated successfully!');
       } else {
         setMessage('Failed to update profile');
@@ -108,7 +112,9 @@ const UserProfile: React.FC = () => {
               required
             />
           </div>
-          <button style={styles.button} type="submit">Update Profile</button>
+          <button style={styles.button} type="submit">
+            Update Profile
+          </button>
         </form>
         {message && <p style={styles.message}>{message}</p>}
       </div>
@@ -165,7 +171,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   message: {
     textAlign: 'center',
-    color: 'red',
+    color: 'green',
     marginTop: '10px',
   },
 };

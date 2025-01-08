@@ -1,34 +1,34 @@
-import React, { useState } from 'react'; 
-import { useNavigate } from 'react-router-dom'; 
+import React, { useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp: React.FC = () => {
-  const [name, setName] = useState<string>(''); 
-  const [email, setEmail] = useState<string>(''); 
-  const [password, setPassword] = useState<string>(''); 
-  const [message, setMessage] = useState<string>(''); 
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); 
+  const handleSignUp = async (e: FormEvent) => {
+    e.preventDefault();
 
     try {
       const response = await fetch('http://localhost:5000/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }), 
+        body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json(); 
+      const data = await response.json();
       if (response.ok) {
-        setMessage('User registered successfully!'); 
-        setTimeout(() => navigate('/login'), 2000); 
+        setMessage('User registered successfully!');
+        setTimeout(() => navigate('/login'), 2000);
       } else {
-        setMessage(data.message || 'Signup failed.'); 
+        setMessage(data.message || 'Signup failed.');
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessage('Something went wrong. Please try again.'); 
+      setMessage('Something went wrong. Please try again.');
     }
   };
 
@@ -43,6 +43,7 @@ const SignUp: React.FC = () => {
               style={styles.input}
               type="text"
               id="name"
+              name="name" 
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}

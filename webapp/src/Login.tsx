@@ -1,24 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [message, setMessage] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); // State to handle loading
+  const [loading, setLoading] = useState<boolean>(false); 
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
     if (!email || !password) {
       setMessage('Please enter both email and password');
       return;
     }
 
-    setLoading(true); // Set loading state to true during the request
-    setMessage(''); // Clear previous messages
+    setLoading(true); 
+    setMessage(''); 
 
     try {
       const response = await fetch('http://localhost:5000/auth/login', {
@@ -28,12 +27,12 @@ const Login: React.FC = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: { user: { _id: string } } = await response.json();
         setMessage('Login successful!');
         setLoading(false);
-        navigate(`/profile/${data.user._id}`); // Redirect to profile page with user ID
+        navigate(`/profile/${data.user._id}`); 
       } else {
-        const errorData = await response.json();
+        const errorData: { message?: string } = await response.json();
         setMessage(errorData.message || 'Invalid email or password');
         setLoading(false);
       }
@@ -84,7 +83,7 @@ const Login: React.FC = () => {
         </div>
         <button
           type="submit"
-          disabled={loading} // Disable button while loading
+          disabled={loading} 
           style={{
             width: '100%',
             padding: '10px',

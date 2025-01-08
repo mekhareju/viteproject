@@ -1,21 +1,10 @@
-import express, { Router, Request, Response } from 'express';
-import bcrypt from 'bcrypt';
-import User from '../models/User';
+const express = require('express');
+const bcrypt = require('bcrypt');
+const User = require('../models/User'); 
 
-interface SignupRequestBody {
-  name: string;
-  email: string;
-  password: string;
-}
+const router = express.Router();
 
-interface LoginRequestBody {
-  email: string;
-  password: string;
-}
-
-const router: Router = express.Router();
-
-router.post('/signup', async (req: Request<{}, {}, SignupRequestBody>, res: Response) => {
+router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
@@ -38,18 +27,20 @@ router.post('/signup', async (req: Request<{}, {}, SignupRequestBody>, res: Resp
 
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    console.error('Signup error:', (error as Error).message);
+    console.error('Signup error:', error.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.post('/login', async (req: Request<{}, {}, LoginRequestBody>, res: Response) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
+
     if (!email || !password) {
       return res.status(400).json({ message: 'All fields are required' });
     }
+
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -63,12 +54,12 @@ router.post('/login', async (req: Request<{}, {}, LoginRequestBody>, res: Respon
 
     res.status(200).json({
       message: 'Login successful',
-      user: { id: user._id, name: user.name, email: user.email, location: user.location },
+      user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
-    console.error('Login error:', (error as Error).message);
+    console.error('Login error:', error.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-export default router;
+module.exports = router;
