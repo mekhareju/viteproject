@@ -1,4 +1,5 @@
 import React, { useEffect, useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface UserData {
   name: string;
@@ -13,17 +14,25 @@ const UserProfile: React.FC = () => {
     location: '',
   });
   const [message, setMessage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem('userToken');
-      if (!token) {
-        setMessage('You need to log in first!');
+      const userId = localStorage.getItem('userId');
+
+      if (!token || !userId) {
+        setMessage('Unauthorized access. Please log in.');
+        navigate('/login');
         return;
       }
 
+      setLoading(true);
+      setMessage('');
+
       try {
-        const response = await fetch(`http://localhost:5000/profile/<USER_ID>`, {
+        const response = await fetch(`http://localhost:5000/profile/${userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -35,28 +44,37 @@ const UserProfile: React.FC = () => {
           const data: UserData = await response.json();
           setUserData(data);
         } else {
-          setMessage('Failed to fetch profile');
+          const errorData = await response.json();
+          setMessage(errorData.message || 'Failed to fetch profile.');
         }
       } catch (error) {
-        console.error('Error:', error);
-        setMessage('An error occurred while fetching profile');
+        console.error('Error fetching profile:', error);
+        setMessage('An error occurred while fetching the profile.');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   const handleUpdate = async (e: FormEvent) => {
     e.preventDefault();
 
     const token = localStorage.getItem('userToken');
-    if (!token) {
-      setMessage('You need to log in first!');
+    const userId = localStorage.getItem('userId');
+
+    if (!token || !userId) {
+      setMessage('Unauthorized access. Please log in.');
+      navigate('/login');
       return;
     }
 
+    setLoading(true);
+    setMessage('');
+
     try {
-      const response = await fetch(`http://localhost:5000/profile/<USER_ID>`, {
+      const response = await fetch(`http://localhost:5000/profile/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -66,14 +84,17 @@ const UserProfile: React.FC = () => {
       });
 
       if (response.ok) {
-        const data: { message: string } = await response.json();
+        const data = await response.json();
         setMessage(data.message || 'Profile updated successfully!');
       } else {
-        setMessage('Failed to update profile');
+        const errorData = await response.json();
+        setMessage(errorData.message || 'Failed to update profile.');
       }
     } catch (error) {
-      console.error('Error:', error);
-      setMessage('An error occurred while updating profile');
+      console.error('Error updating profile:', error);
+      setMessage('An error occurred while updating the profile.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,6 +102,7 @@ const UserProfile: React.FC = () => {
     <div style={styles.container}>
       <div style={styles.formBox}>
         <h2 style={styles.heading}>User Profile</h2>
+        {loading && <p style={styles.loading}>Loading...</p>}
         <form onSubmit={handleUpdate}>
           <div style={styles.formGroup}>
             <label style={styles.label}>Name</label>
@@ -112,11 +134,28 @@ const UserProfile: React.FC = () => {
               required
             />
           </div>
-          <button style={styles.button} type="submit">
-            Update Profile
+          <button
+            style={{
+              ...styles.button,
+              backgroundColor: loading ? '#ccc' : '#007bff',
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? 'Updating...' : 'Update Profile'}
           </button>
         </form>
-        {message && <p style={styles.message}>{message}</p>}
+        {message && (
+          <p
+            style={{
+              ...styles.message,
+              color: message.includes('successfully') ? 'green' : 'red',
+            }}
+          >
+            {message}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -143,6 +182,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginBottom: '20px',
     color: '#333',
   },
+  loading: {
+    textAlign: 'center',
+    color: '#555',
+    marginBottom: '15px',
+  },
   formGroup: {
     marginBottom: '20px',
   },
@@ -162,16 +206,13 @@ const styles: { [key: string]: React.CSSProperties } = {
   button: {
     width: '100%',
     padding: '12px',
-    backgroundColor: '#007bff',
     color: '#fff',
     borderRadius: '8px',
     border: 'none',
-    cursor: 'pointer',
     fontSize: '16px',
   },
   message: {
     textAlign: 'center',
-    color: 'green',
     marginTop: '10px',
   },
 };

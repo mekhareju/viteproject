@@ -5,7 +5,7 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [message, setMessage] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false); 
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: FormEvent) => {
@@ -27,9 +27,14 @@ const Login: React.FC = () => {
       });
 
       if (response.ok) {
-        const data: { user: { _id: string } } = await response.json();
+        const data: { token: string; user: { _id: string } } = await response.json();
+        console.log("User ID:", data.user._id);
+        localStorage.setItem('userToken', data.token);
+        localStorage.setItem('userId', data.user._id);
+
         setMessage('Login successful!');
         setLoading(false);
+
         navigate(`/profile/${data.user._id}`); 
       } else {
         const errorData: { message?: string } = await response.json();
@@ -83,7 +88,7 @@ const Login: React.FC = () => {
         </div>
         <button
           type="submit"
-          disabled={loading} 
+          disabled={loading}
           style={{
             width: '100%',
             padding: '10px',

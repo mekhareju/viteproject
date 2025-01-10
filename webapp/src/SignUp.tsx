@@ -19,8 +19,12 @@ const SignUp: React.FC = () => {
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
+      const data: { token?: string; user?: { _id: string }; message?: string } = await response.json();
       if (response.ok) {
+        if (data.token && data.user) {
+          localStorage.setItem('userToken', data.token);
+          localStorage.setItem('userId', data.user._id);
+        }
         setMessage('User registered successfully!');
         setTimeout(() => navigate('/login'), 2000);
       } else {

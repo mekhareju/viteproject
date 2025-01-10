@@ -4,6 +4,11 @@ const User = require('../models/User');
 
 const router = express.Router();
 
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = 'your-secret-key'; 
+const JWT_EXPIRES_IN = '1h'; 
+
 router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -52,8 +57,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+
     res.status(200).json({
       message: 'Login successful',
+      token,
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
