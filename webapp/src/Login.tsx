@@ -1,4 +1,5 @@
-import React, { useState, FormEvent } from 'react';
+import React, { FormEvent, useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
@@ -26,16 +27,21 @@ const Login: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      //console.log(response);
+
       if (response.ok) {
-        const data: { token: string; user: { _id: string } } = await response.json();
-        console.log("User ID:", data.user._id);
+        //let test = await response.json();
+        //console.log(test);
+        const data: { message: string, token: string; user: { id: string } } = await response.json();
+        console.log(data);
+        console.log("User ID:", data.user.id);
         localStorage.setItem('userToken', data.token);
-        localStorage.setItem('userId', data.user._id);
+        localStorage.setItem('userId', data.user.id);
 
         setMessage('Login successful!');
         setLoading(false);
 
-        navigate(`/profile/${data.user._id}`); 
+        navigate(`/profile/${data.user.id}`); 
       } else {
         const errorData: { message?: string } = await response.json();
         setMessage(errorData.message || 'Invalid email or password');
