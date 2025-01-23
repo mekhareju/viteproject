@@ -4,13 +4,14 @@ const cors = require('cors');
 //const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth'); 
 const profileRoutes = require('./routes/profile'); 
+const flowerRoutes = require('./routes/flowers');
 
 const app = express();
 
 const corsOptions = {
- origin: ['http://localhost:5173'], // Add your frontend URL here
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+ origin: ['http://localhost:5173'], // frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'], 
 };
 
 app.use(cors(corsOptions));
@@ -27,6 +28,7 @@ mongoose
 
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
+app.use('/flowers', flowerRoutes); 
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -7,6 +7,7 @@ import About from './About';
 import Login from './Login';
 import SignUp from './SignUp';
 import UserProfile from './UserProfile';
+import AdminPage from './AdminPage'; 
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile/:id" element={<UserProfile />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
       <Footer />
     </Router>
