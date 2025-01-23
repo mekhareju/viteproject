@@ -1,7 +1,7 @@
-const { AbilityBuilder, createMongoAbility } = require('@casl/ability');
+const { AbilityBuilder, Ability } = require('@casl/ability');
 
 function defineAbilitiesFor(user) {
-  const { can, cannot, build } = new AbilityBuilder(createMongoAbility());
+  const { can, cannot, build } = new AbilityBuilder(Ability);
 
   if (user.role === 'admin') {
     can('manage', 'Flower'); 
