@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const AdminPage: React.FC = () => {
   const [flowers, setFlowers] = useState([]);
@@ -7,24 +6,18 @@ const AdminPage: React.FC = () => {
   const [color, setColor] = useState('');
   const [price, setPrice] = useState('');
   const [message, setMessage] = useState('');
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('userToken');
-    const role = localStorage.getItem('userRole');
-
-    if (!token || role !== 'admin') {
-      navigate('/profile'); 
-    } else {
-      fetchFlowers(); 
-    }
-  }, [navigate]);
 
   const fetchFlowers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/flowers');
+      const token = localStorage.getItem('userToken');
+      const response = await fetch('http://localhost:5000/flowers', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
       const data = await response.json();
-      
+
       if (data.length === 0) {
         setMessage('No flowers found.');
       } else {
@@ -65,29 +58,46 @@ const AdminPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchFlowers();
+  }, []);
+
   return (
-    <div style={{ padding: '20px' }}>
-    <h1>Admin - Manage Flowers</h1>
-    <form onSubmit={handleAddFlower}>
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required />
-      <input type="text" value={color} onChange={(e) => setColor(e.target.value)} placeholder="Color" required />
-      <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" required />
-      <button type="submit">Add Flower</button>
-    </form>
-    {message && <p>{message}</p>}
-    <h2>Flower List</h2>
-    <ul>
-      {flowers.length === 0 ? (
-        <p>No flowers available.</p>
-      ) : (
-        flowers.map((flower: any) => (
+    <div>
+      <h1>Admin - Manage Flowers</h1>
+      <form onSubmit={handleAddFlower}>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          required
+        />
+        <input
+          type="text"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          placeholder="Color"
+          required
+        />
+        <input
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          placeholder="Price"
+          required
+        />
+        <button type="submit">Add Flower</button>
+      </form>
+      {message && <p>{message}</p>}
+      <ul>
+        {flowers.map((flower: any) => (
           <li key={flower._id}>
             {flower.name} - {flower.color} - RS {flower.price}
           </li>
-        ))
-      )}
-    </ul>
-  </div>  
+        ))}
+      </ul>
+    </div>
   );
 };
 

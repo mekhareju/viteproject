@@ -39,6 +39,12 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+  console.log('Email:', email);
+  console.log('Password:', password);
+  console.log('Request body:', req.body);
+  //console.log('User found:', User);
+  //console.log('Is password valid:', isPasswordValid);
+
 
   try {
 
@@ -48,11 +54,15 @@ router.post('/login', async (req, res) => {
 
 
     const user = await User.findOne({ email });
+    console.log('User Found:', user);
+
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Password Valid:', isPasswordValid);
+
     if (!isPasswordValid) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }

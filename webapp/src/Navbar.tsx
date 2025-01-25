@@ -4,6 +4,8 @@ import './Navbar.css';
 
 const Navbar: React.FC = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  //const [auth, setAuth] = useState<boolean>(false);
+  //const [role, setRole] = useState<string | null>(null);
 
   return (
     <nav className="navbar">
@@ -14,6 +16,9 @@ const Navbar: React.FC = () => {
         </li>
         <li>
           <Link to="/about">About</Link>
+        </li>
+        <li>
+          <Link to="/marketplace">Marketplace</Link>
         </li>
         <li>
           <Link to="/login">Login</Link>

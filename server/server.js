@@ -6,6 +6,8 @@ const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile'); 
 const flowerRoutes = require('./routes/flowers');
 
+const authenticateToken = require('./middleware/Middleware');
+
 const app = express();
 
 const corsOptions = {
@@ -15,9 +17,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-//app.use(cors()); 
 app.use(express.json());
-//app.use(bodyParser.json());
 
 const mongoURI = 'mongodb+srv://mekhareju:user123@cluster0.gakd5.mongodb.net/giftShopDB?retryWrites=true&w=majority';
 
@@ -29,6 +29,7 @@ mongoose
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/flowers', flowerRoutes); 
+app.use(authenticateToken);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

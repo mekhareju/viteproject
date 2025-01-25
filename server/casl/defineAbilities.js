@@ -1,16 +1,23 @@
 const { AbilityBuilder, Ability } = require('@casl/ability');
 
 function defineAbilitiesFor(user) {
-  const { can, cannot, build } = new AbilityBuilder(Ability);
+  const { can, rules } = new AbilityBuilder(Ability);
 
   if (user.role === 'admin') {
-    can('manage', 'Flower'); 
-  } else {
-    can('read', 'Flower');  
-    cannot('create', 'Flower');  
+    can('manage', 'all');
+    can('read', 'AdminPage');
   }
 
-  return build();
+  else if (user.role === 'user') {
+    can('read', 'UserProfile');
+    can('read', 'Flower');
+  }
+
+  else {
+    can('read', 'Flower');
+  }
+
+  return new Ability(rules); 
 }
 
 module.exports = defineAbilitiesFor;

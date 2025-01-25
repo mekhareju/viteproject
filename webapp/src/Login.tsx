@@ -47,7 +47,8 @@ const Login: React.FC = () => {
         if (data.user.role === 'admin') {
           navigate('/admin');
         } else {
-          navigate(`/profile/${data.user.id}`);        }
+          navigate(`/profile/${data.user.id}`);       
+       }
       } else {
         const errorData: { message?: string } = await response.json();
         setMessage(errorData.message || 'Invalid email or password');

@@ -1,8 +1,8 @@
 const express = require('express');
 const authenticateToken = require('../middleware/Middleware.js');
-const checkAbilities = require('../middleware/checkAbilities');
 const Flower = require('../models/Flowers'); 
 const router = express.Router();
+const defineAbilitiesFor = require('../casl/defineAbilities');
 
 router.get('/', async (req, res) => {
   try {
@@ -18,22 +18,31 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', authenticateToken, checkAbilities('create', 'Flower'), async (req, res) => {
-    try {
-      const { name, color, price } = req.body;
-      if (!name || !color || !price) {
-        return res.status(400).json({ message: 'All fields are required.' });
-      }
+router.post('/', authenticateToken, async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
+  }
 
-      const newFlower = new Flower({ name, color, price });
-      await newFlower.save();
+  const ability = defineAbilitiesFor(req.user); 
 
-      res.status(201).json({ message: 'Flower created successfully', flower: newFlower });
-    } catch (error) {
-        console.error('Error creating flower:', error.message);
-      res.status(500).json({ message: 'Server error' });
+  if (!ability.can('create', 'Flower')) {
+    return res.status(403).json({ message: 'Insufficient permissions: Cannot create flower' });
+  }
+
+  try {
+    const { name, color, price } = req.body;
+    if (!name || !color || !price) {
+      return res.status(400).json({ message: 'All fields are required.' });
     }
-  });
-  
+
+    const newFlower = new Flower({ name, color, price });
+    await newFlower.save();
+
+    res.status(201).json({ message: 'Flower created successfully', flower: newFlower });
+  } catch (error) {
+    console.error('Error creating flower:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 module.exports = router;
